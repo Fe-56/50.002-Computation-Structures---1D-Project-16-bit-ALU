@@ -1,0 +1,38 @@
+module compare (    
+    input alufn[6],       
+    input a[16],
+    input b[16],
+    output out[16]
+  ) {
+  
+  sig cmp;
+  
+  always {
+    
+    case(alufn[2:1]){
+      b01:                    // compare a=b
+        if (a == b){
+          cmp = b1;
+        } else {
+          cmp = b0;
+        }
+      b10:                    // compare a<b
+        if (a < b){
+          cmp = b1;
+        } else {
+          cmp = b0;
+        }           
+      b11:                    // compare a<=b
+        if (a <= b){
+          cmp = b1;
+        } else {
+          cmp = b0;
+        }   
+      default:
+        cmp = b0;
+    }
+    
+    out[15:1] = 15b0;        //first 15 bits of output are 0
+    out[0] = cmp;
+  }
+}
