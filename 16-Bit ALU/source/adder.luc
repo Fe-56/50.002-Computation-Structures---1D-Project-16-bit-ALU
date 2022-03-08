@@ -1,0 +1,41 @@
+module adder (
+//inputs
+    input alufn[6],  
+    input a[16],  
+    input b[16],
+//outputs
+    output out[16],
+    output z,
+    output v,
+    output n    
+  ) {
+//signal sum for the output of the operations  
+  sig sum[16];
+  
+  always {
+    case (alufn[1:0]){//looking at the 2 least significant bits of the alufn
+      b000000:
+        sum = a+b;//addition
+      b000001:
+        sum = a-b;//subtraction
+      b100101:
+        sum = a-b;// subtraction for CMPLT
+      b100111:
+        sum = a-b; // subtraction for CMPLTEQ
+      b100011:
+        sum = a-b; // subtraction for CMPEQ
+      b000010:
+        sum = a*b;//multiplication
+      b000011:
+        sum = a - ((a/b)*b);//modulo
+      default:
+        sum = a+b;
+    }
+      //assigning output values
+      out = sum[15:0]; //output of the adder
+      v = (a[15] & (alufn[0] ^ b[15]) & ~sum[15]) | (~a[15] & ~(alufn[0]^b[15]) & sum[15]); 
+      n = sum[15]; //most significant bit of the sum 
+      z = ~|sum; //ensure that none of the ss are equal to 1 so it is a nor for all the ss values
+       
+  }
+}
