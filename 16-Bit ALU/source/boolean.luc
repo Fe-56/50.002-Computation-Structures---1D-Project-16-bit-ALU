@@ -1,49 +1,37 @@
 module boolean (
-    input a[16], // 16 bits of input a
-    input b[16], // 16 bits of input b
-    input alufn[6], //ALUFN[5:0]
-    
-    output boolean[16] //15 bits of outputs boolean
-  ) {
+        input a[16],
+        input b[16],
+        input alufn[6],
+        output bool[16]
+    ) {
+    always {
+        case (alufn[3:0]) { //based on the last 4 values of the alufn, decide which case and calculate bool
+            b1000:
+                bool = a & b;
+                
+            b1110:
+                bool = a | b;
+                
+            b0110:
+                bool = a ^ b;
+                
+            b1010:
+                bool = a;
+            
+            b1100:
+                bool = b;
 
-  always {
-  
-    case(alufn[3:0]){
-      
-      // AND
-      4b1000:
-        boolean = a & b; 
-      
-      // OR
-      4b1110:
-        boolean = a | b;
-      
-      // XOR
-      4b0110:
-        boolean = a ^ b; 
-      
-      // 'A'
-      4b1010:
-        boolean = a;
+            b0001:
+                bool = ~a & ~b;
 
-      // NAND
-      4b0111:
-        boolean = ~(a & b);
-
-      // NOR
-      4b0001:
-        boolean = ~(a | b);
-
-      // XNOR
-      4b1001:
-        boolean = ~(a ^ b);
-
-      // 'B'
-      4b1100:
-        boolean = b;
+            b0111:
+                bool = ~a | ~b;
+            
+            b1111:
+                bool = 16hffff;
         
-      default:
-        boolean = 0;
-    }
-  }  
+            default:
+                bool = b0;
+            }
+        }
 }
