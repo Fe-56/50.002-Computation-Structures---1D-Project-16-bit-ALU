@@ -44,6 +44,7 @@ module au_top (
     io_led[0][3] = test.case4;
     io_led[0][4] = test.case5;
     io_led[0][5] = test.case6;
+    io_led[0][6] = test.case7;
     io_led[1][2:0] = test.case_group;
     
     if (test.overall == b00){

@@ -17,8 +17,9 @@ module tester (
     output case3, // to indicate that the third case of the current case_group is being executed
     output case4, // to indicate that the fourth case of the current case_group is being executed
     output case5, // to indicate that the fifth case of the current case_group is being executed
-    output case6 // to indicate that the sixth case of the current case_group is being executed
-    // need up till case6 because the case_group with the largest number of test cases (case_group b011, Comparator) has 6 test cases
+    output case6, // to indicate that the sixth case of the current case_group is being executed
+    output case7 // to indicate that the seventh case of the current case_group is being executed
+    // need up till case7 because the case_group with the largest number of test cases (case_group b011, Comparator) has 7 test cases
     
     // for example, test case #3 is an addition test case that results in a zero, thus this is under
     // case_group = b001 (1), where case6 = 0, case 
@@ -54,6 +55,7 @@ module tester (
     case4 = 0; // assign something to case4 first
     case5 = 0; // assign something to case5 first
     case6 = 0; // assign something to case6 first
+    case7 = 0; // assign something to case7 first
     alu.alufn = b000000; // assign something to input alufn of alu first
     alu.a = b0000000000000000; // assign something to input a of alu first
     alu.b = b0000000000000000; // assign something to input b of alu first
@@ -79,7 +81,7 @@ module tester (
         alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
         
         if (fail_case == b00001){ // if Test Case #1 is chosen to fail
-          alu_actual[0] = -alu_actual[0]; // negate/invert the LSB of alu_actual
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
@@ -111,7 +113,7 @@ module tester (
         alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
         
         if (fail_case == b00010){ // if Test Case #2 is chosen to fail
-          alu_actual[0] = -alu_actual[0]; // negate/invert the LSB of alu_actual
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
@@ -143,7 +145,7 @@ module tester (
         alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
         
         if (fail_case == b00011){ // if Test Case #3 is chosen to fail
-          alu_actual[0] = -alu_actual[0]; // negate/invert the LSB of alu_actual
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
@@ -175,11 +177,638 @@ module tester (
         alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
         
         if (fail_case == b00100){ // if Test Case #4 is chosen to fail
-          alu_actual[0] = -alu_actual[0]; // negate/invert the LSB of alu_actual
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
-          feeder.d = feeder.PASS; // next state is state S3 if correct (i.e. the ALU's output matches the expected answer)
+          feeder.d = feeder.S4; // next state is state S4 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S4: // Test Case #5 - Subtraction (No Overflow)
+        inputs.selector = b00100;
+        answers.selector = b00100;
+        case_group = b010; // case_group 2, subtraction
+        case4 = 0; // reset case4
+        case1 = 1; // to represent that the 1st test case of the current case_group 2 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b00101){ // if Test Case #5 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S5; // next state is state S5 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S5: // Test Case #6 - Subtraction (Positive Overflow)
+        inputs.selector = b00101;
+        answers.selector = b00101;
+        case_group = b010; // case_group 2, subtraction
+        case1 = 0; // reset case1
+        case2 = 1; // to represent that the 2nd test case of the current case_group 2 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b00110){ // if Test Case #6 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S6; // next state is state S6 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S6: // Test Case #7 - Subtraction (Negative Overflow)
+        inputs.selector = b00110;
+        answers.selector = b00110;
+        case_group = b010; // case_group 2, subtraction
+        case2 = 0; // reset case2
+        case3 = 1; // to represent that the 3rd test case of the current case_group 2 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b00111){ // if Test Case #7 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S7; // next state is state S7 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S7: // Test Case #8 - Subtraction (Zero)
+        inputs.selector = b00111;
+        answers.selector = b00111;
+        case_group = b010; // case_group 2, subtraction
+        case3 = 0; // reset case3
+        case4 = 1; // to represent that the 4th test case of the current case_group 2 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b01000){ // if Test Case #8 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S8; // next state is state S8 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S8: // Test Case #9 - Comparator (Equal, True)
+        inputs.selector = b01000;
+        answers.selector = b01000;
+        case_group = b011; // case_group 3, comparator
+        case4 = 0; // reset case4
+        case1 = 1; // to represent that the 1st test case of the current case_group 3 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b01001){ // if Test Case #9 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S9; // next state is state S9 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S9: // Test Case #10 - Comparator (Equal, False)
+        inputs.selector = b01001;
+        answers.selector = b01001;
+        case_group = b011; // case_group 3, comparator
+        case1 = 0; // reset case1
+        case2 = 1; // to represent that the 2nd test case of the current case_group 3 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b01010){ // if Test Case #10 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S10; // next state is state S10 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S10: // Test Case #11 - Comparator (Less Than, True)
+        inputs.selector = b01010;
+        answers.selector = b01010;
+        case_group = b011; // case_group 3, comparator
+        case2 = 0; // reset case2
+        case3 = 1; // to represent that the 3rd test case of the current case_group 3 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b01011){ // if Test Case #11 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S11; // next state is state S11 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S11: // Test Case #12 - Comparator (Less Than, False)
+        inputs.selector = b01011;
+        answers.selector = b01011;
+        case_group = b011; // case_group 3, comparator
+        case3 = 0; // reset case3
+        case4 = 1; // to represent that the 4th test case of the current case_group 3 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b01100){ // if Test Case #12 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S12; // next state is state S12 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S12: // Test Case #13 - Comparator (Less Than Equals To, True)
+        inputs.selector = b01100;
+        answers.selector = b01100;
+        case_group = b011; // case_group 3, comparator
+        case4 = 0; // reset case4
+        case5 = 1; // to represent that the 5th test case of the current case_group 3 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b01101){ // if Test Case #13 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S13; // next state is state S13 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S13: // Test Case #14 - Comparator (Less Than Equals To, True + Equal)
+        inputs.selector = b01101;
+        answers.selector = b01101;
+        case_group = b011; // case_group 3, comparator
+        case5 = 0; // reset case5
+        case6 = 1; // to represent that the 6th test case of the current case_group 3 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b01110){ // if Test Case #14 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S14; // next state is state S14 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S14: // Test Case #15 - Comparator (Less Than Equals To, False)
+        inputs.selector = b01110;
+        answers.selector = b01110;
+        case_group = b011; // case_group 3, comparator
+        case6 = 0; // reset case6
+        case7 = 1; // to represent that the 7th test case of the current case_group 3 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b01111){ // if Test Case #15 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S15; // next state is state S15 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S15: // Test Case #16 - Boolean (AND)
+        inputs.selector = b01111;
+        answers.selector = b01111;
+        case_group = b100; // case_group 4, boolean
+        case7 = 0; // reset case7
+        case1 = 1; // to represent that the 1st test case of the current case_group 4 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10000){ // if Test Case #16 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S16; // next state is state S16 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S16: // Test Case #17 - Boolean (OR)
+        inputs.selector = b10000;
+        answers.selector = b10000;
+        case_group = b100; // case_group 4, boolean
+        case1 = 0; // reset case1
+        case2 = 1; // to represent that the 2nd test case of the current case_group 4 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10001){ // if Test Case #17 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S17; // next state is state S17 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S17: // Test Case #18 - Boolean (XOR)
+        inputs.selector = b10001;
+        answers.selector = b10001;
+        case_group = b100; // case_group 4, boolean
+        case2 = 0; // reset case2
+        case3 = 1; // to represent that the 3rd test case of the current case_group 4 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10010){ // if Test Case #18 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S18; // next state is state S18 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S18: // Test Case #19 - Boolean (A)
+        inputs.selector = b10010;
+        answers.selector = b10010;
+        case_group = b100; // case_group 4, boolean
+        case3 = 0; // reset case3
+        case4 = 1; // to represent that the 4th test case of the current case_group 4 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10011){ // if Test Case #19 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S19; // next state is state S19 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S19: // Test Case #20 - Shifter (Shift Left)
+        inputs.selector = b10011;
+        answers.selector = b10011;
+        case_group = b101; // case_group 5, shifter
+        case4 = 0; // reset case4
+        case1 = 1; // to represent that the 1st test case of the current case_group 5 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10100){ // if Test Case #20 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S20; // next state is state S20 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S20: // Test Case #21 - Shifter (Shift Right)
+        inputs.selector = b10100;
+        answers.selector = b10100;
+        case_group = b101; // case_group 5, shifter
+        case1 = 0; // reset case1
+        case2 = 1; // to represent that the 2nd test case of the current case_group 5 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10101){ // if Test Case #21 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S21; // next state is state S21 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S21: // Test Case #22 - Shifter (Arithmetic Shift Right)
+        inputs.selector = b10101;
+        answers.selector = b10101;
+        case_group = b101; // case_group 5, shifter
+        case2 = 0; // reset case2
+        case3 = 1; // to represent that the 3rd test case of the current case_group 5 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10110){ // if Test Case #22 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S22; // next state is state S22 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S22: // Test Case #23 - Multiplication
+        inputs.selector = b10110;
+        answers.selector = b10110;
+        case_group = b110; // case_group 6, multiplication
+        case3 = 0; // reset case3
+        case1 = 1; // to represent that the 1st test case of the current case_group 6 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10111){ // if Test Case #23 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.PASS; // next state is state PASS if correct (i.e. the ALU's output matches the expected answer)
         }
         
         else{
