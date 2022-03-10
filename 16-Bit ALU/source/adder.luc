@@ -1,31 +1,40 @@
-module adder (    // adder module implements both addition and subtraction
+module adder (
     input a[16],
     input b[16],
-    input alufn[2],
-    output out[16],
+    input alufn[6],
+    output add[16],
     output z,
     output v,
     output n
-  ) {  
-   
-  sig temp[16];  
-                  
+  ) {
+  
+  sig twoscomp_b[16];
+  sig addtemp[16];
+
   always {
-    case(alufn[0]) {
-      1b0:
-        temp = a + b;    // addition 
-      1b1:
-        temp = a - b;    // subtraction 
-   
-      default:
-        temp = 0;
-        }
+    z = 0;
+    v = 0;
+    n = 0;
+    add = a;
+  
+    if (alufn[1:0] == b10) {
     
-    // calcation of z(zero),v(overflow),n(negative)
-    n = temp[15];                                               
-    v = (a[15]&b[15]&(~temp[15]))|((~a[15])&(~b[15])&temp[15]);
-    z = ~|temp;
-    out = temp;
+      add = a * b;
+          
+      } else {
     
+      twoscomp_b = b^16x{alufn[0]};
+      
+      if (alufn[0]){
+      addtemp = a - b;}
+      else {
+      addtemp = a + b;}
+      add = addtemp;
+      
+      z = (addtemp == 16x{0});
+      v = (a[15] & twoscomp_b[15] & !addtemp[15]) || (!a[15] & !twoscomp_b[15] & addtemp[15]);
+      n = addtemp[15];
+      
+      }   
   }
 }
