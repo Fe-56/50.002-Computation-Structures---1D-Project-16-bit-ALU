@@ -1,38 +1,33 @@
-module compare (    
-    input alufn[6],       
-    input a[16],
-    input b[16],
-    output out[16]
+module compare (
+    input z,  // output z from adder
+    input v,  // output v from adder
+    input n,  // output n from adder
+    input alufn[6], // ALUFN[5:0]
+    output cmp[16] // compare output
   ) {
   
-  sig cmp;
+sig cmpLast;
   
   always {
+    case(alufn[3:0]){ // based on alufn, pick which operator
     
-    case(alufn[2:1]){
-      b01:                    // compare a=b
-        if (a == b){
-          cmp = b1;
-        } else {
-          cmp = b0;
-        }
-      b10:                    // compare a<b
-        if (a < b){
-          cmp = b1;
-        } else {
-          cmp = b0;
-        }           
-      b11:                    // compare a<=b
-        if (a <= b){
-          cmp = b1;
-        } else {
-          cmp = b0;
-        }   
+      4b0011:
+        // compare for equal
+        cmpLast = z; 
+        
+      4b0101:
+        // compare for less than
+        cmpLast = n^v;
+        
+      4b0111:
+        // compare for less than or equal
+        cmpLast= z|(n^v);
+      
       default:
-        cmp = b0;
-    }
+        cmpLast = b0;
+       }
     
-    out[15:1] = 15b0;        //first 15 bits of output are 0
-    out[0] = cmp;
-  }
+    cmp[0] = cmpLast;  // assign result to rightmost bit (LSB)
+    cmp[15:1] = 15b00000000000000;  // assign other bits to 0
+    }
 }
