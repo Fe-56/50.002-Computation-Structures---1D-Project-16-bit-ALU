@@ -1,41 +1,41 @@
-module adder (
-//inputs
-    input alufn[6],  
-    input a[16],  
-    input b[16],
-//outputs
-    output out[16],
-    output z,
-    output v,
-    output n    
+module arithmetic (
+    input a[16], // 16 bits of input a
+    input b[16], // 16 bits of input b
+    input alufn[6], //ALUFN[5:0]
+    
+    output out[16], // output for the arithmetic
+    output z, // z output
+    output v, // v output
+    output n // n output
+  
   ) {
-//signal sum for the output of the operations  
-  sig sum[16];
+  
+  sig ans[16];
   
   always {
-    case (alufn[1:0]){//looking at the 2 least significant bits of the alufn
-      b000000:
-        sum = a+b;//addition
-      b000001:
-        sum = a-b;//subtraction
-      b100101:
-        sum = a-b;// subtraction for CMPLT
-      b100111:
-        sum = a-b; // subtraction for CMPLTEQ
-      b100011:
-        sum = a-b; // subtraction for CMPEQ
-      b000010:
-        sum = a*b;//multiplication
-      b000011:
-        sum = a - ((a/b)*b);//modulo
+    
+    case(alufn[3:0]){
+      4b0000:
+        // add
+        ans = $signed(a) + $signed(b);
+      4b0001:
+        // sub
+        ans = $signed(a) - $signed(b);
+      4b0010:
+        // mult
+        ans = a * b;
       default:
-        sum = a+b;
-    }
-      //assigning output values
-      out = sum[15:0]; //output of the adder
-      v = (a[15] & (alufn[0] ^ b[15]) & ~sum[15]) | (~a[15] & ~(alufn[0]^b[15]) & sum[15]); 
-      n = sum[15]; //most significant bit of the sum 
-      z = ~|sum; //ensure that none of the ss are equal to 1 so it is a nor for all the ss values
-       
+        // for compare
+        ans = $signed(a) - $signed(b);
+    }    
+    out = ans;    
+    // z is true when all out is 0
+    // z = nor all values in ans
+    z = ~|ans;
+    // v is true when add operation overflow
+    v = ((a[15]&(alufn[0]^b[15])&~ans[15]) | (~a[15]&~(alufn[0]^b[15])&ans[15]));
+    // n is true when ans[15] is 1
+    n = ans[15];
+    
   }
 }
