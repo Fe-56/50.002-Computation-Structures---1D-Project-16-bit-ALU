@@ -1,33 +1,18 @@
 module compare (
-    input z,  // output z from adder
-    input v,  // output v from adder
-    input n,  // output n from adder
-    input alufn[6], // ALUFN[5:0]
-    output cmp[16] // compare output
-  ) {
-  
-sig cmpLast;
-  
-  always {
-    case(alufn[3:0]){ // based on alufn, pick which operator
-    
-      4b0011:
-        // compare for equal
-        cmpLast = z; 
-        
-      4b0101:
-        // compare for less than
-        cmpLast = n^v;
-        
-      4b0111:
-        // compare for less than or equal
-        cmpLast= z|(n^v);
-      
-      default:
-        cmpLast = b0;
-       }
-    
-    cmp[0] = cmpLast;  // assign result to rightmost bit (LSB)
-    cmp[15:1] = 15b00000000000000;  // assign other bits to 0
-    }
+    input z,  
+    input v, 
+    input n, 
+    input alufn[6],   
+    output comp[16] 
+  ) { 
+ 
+  always { 
+    comp = 0;    
+     
+    case(alufn[2:1]){ //based on the 3rd and 2nd bit of the OPCODE, calculate COMP, 1 or 0
+    2b01: comp[0] = z;     // case 1 when a = b
+    2b10: comp[0] = n^v;   // case 2 when a < b
+    2b11: comp[0] = z | n^v;  // case 3 when a <= b
+  } 
+}
 }
