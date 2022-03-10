@@ -9,26 +9,56 @@ module au_top (
     output io_sel [4],      // Digit select on IO Shield
     input io_button [5],    // 5 buttons on IO Shield
     input io_dip [3][8]     // DIP switches on IO Shield
-  ) {
-  
+) 
+
+{  
   sig rst;                  // reset signal
+  counter slowclock(#SIZE(1),#DIV(27), .clk(clk), .rst(rst));
+  tester test(.clk(slowclock.value), .rst(rst));
   
   .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA
     // clock. This ensures the entire FPGA comes out of reset at the same time.
     reset_conditioner reset_cond;
+    
+    .rst(rst) {
+      multi_seven_seg seg;
+    }
   }
   
   always {
     reset_cond.in = ~rst_n; // input raw inverted reset signal
     rst = reset_cond.out;   // conditioned reset
-    
+     
     usb_tx = usb_rx;        // loop serial port
-    
+     
     led = 8h00;             // turn LEDs off
     
-    io_led = 3x{{8h00}};    // turn LEDs off
-    io_seg = 8hff;          // turn segments off
-    io_sel = 4hf;           // select no digits
+    seg.values = {4h6, 4h6, 4h6, 4h6};
+    
+    test.fail_case = io_dip[0][4:0]; // to select the specific test case to fail
+    
+    io_led[0][0] = test.case1;
+    io_led[0][1] = test.case2;
+    io_led[0][2] = test.case3;
+    io_led[0][3] = test.case4;
+    io_led[0][4] = test.case5;
+    io_led[0][5] = test.case6;
+    io_led[1][2:0] = test.case_group;
+    
+    if (test.overall == b00){
+      seg.values = {4h6, 4h6, 4h6, 4h6}; // empty
+    }
+    
+    else if (test.overall == b10){
+      seg.values = {4h0, 4h1, 4h2, 4h2}; // PASS
+    }
+    
+    else if (test.overall == b01){
+      seg.values = {4h3, 4h1, 4h4, 4h5}; // FAIL
+      }
+        
+    io_seg = ~seg.seg;      // connect segments to the driver
+    io_sel = ~seg.sel;      // connect digit select to the driver
   }
 }

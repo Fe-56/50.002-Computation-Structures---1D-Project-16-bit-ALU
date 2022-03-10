@@ -1,0 +1,196 @@
+module tester (
+    input clk,  // clock
+    input rst,  // reset
+    
+    // 5 bit binary number to represent which specific test case shall be failed (inverting LSB of ALU[15:0] of ALU
+    // from b00001 (Test Case #1) to b10111 (Test Case #23)
+    input fail_case[5],
+    
+    output overall[2],// // overall for all test cases, b00 means still testing, b01 means PASS, b10 means FAIL
+    
+    // 6 case_groups, need 3 bits to represent: 
+    // b001) Addition, b010) Subtraction, b011) Comparator, b100) Boolean, b101) Shifter, b110) Multiplier
+    output case_group[3], // so that it will be easier to see exactly what kind of test cases/ALU operations are being tested
+    
+    output case1, // to indicate that the first case of the current case_group is being executed
+    output case2, // to indicate that the second case of the current case_group is being executed
+    output case3, // to indicate that the third case of the current case_group is being executed
+    output case4, // to indicate that the fourth case of the current case_group is being executed
+    output case5, // to indicate that the fifth case of the current case_group is being executed
+    output case6 // to indicate that the sixth case of the current case_group is being executed
+    // need up till case6 because the case_group with the largest number of test cases (case_group b011, Comparator) has 6 test cases
+    
+    // for example, test case #3 is an addition test case that results in a zero, thus this is under
+    // case_group = b001 (1), where case6 = 0, case 
+    // another example, test case #9, which is a comparator test case of A = B resulting in true, thus this is under
+    // case_group = 0b011 (3), where case3 = 0, case2 = 0, case1 = 1 (0b001 = 1), as this is the first test case
+    // under the comparator case_group
+) 
+
+{
+  fsm feeder(.clk(clk), .rst(rst)) = {S0, S1, S2, S3, // case_group b001, addition
+                                      S4, S5, S6, S7, // case_group 0b010, subtraction
+                                      S8, S9, S10, S11, S12, S13, S14, // case_group 0b011, comparator
+                                      S15, S16, S17, S18, // case_group 0b100, boolean
+                                      S19, S20, S21, // case_group 0b101, shifter
+                                      S22, // case_group 0b110, multiplier
+                                      PASS, FAIL};
+  // a total of 25 states, 23 states to represent each of the 23 test cases, PASS state to represent all 23 test cases passed,
+  // FAIL state to represent that at least one of the 23 test cases failed
+  
+  rom1 inputs; // the ROM that provides the inputs (38 bits, A[15:0] + B[15:0] + ALUFN[5:0], concatenated)
+  rom2 answers; // the ROM that provides the expected answers (19 bits, ALU[15:0] + Z + V + N, concatenated)
+  alu alu;
+  sig a[16], b[16], alufn[6], s[16], z, v, n, alu_actual[16];
+
+  always {
+    overall = b00; // initial output overall b00, to show that it is still testing the test cases
+    inputs.selector = b00000; // assign somethiing to inputs.selector first
+    answers.selector = b00000; // assign something to anwers.selector first
+    case_group = b000; // assign something to case_group first
+    case1 = 0; // assign something to case1 first
+    case2 = 0; // assign something to case2 first
+    case3 = 0; // assign something to case3 first
+    case4 = 0; // assign something to case4 first
+    case5 = 0; // assign something to case5 first
+    case6 = 0; // assign something to case6 first
+    alu.alufn = b000000; // assign something to input alufn of alu first
+    alu.a = b0000000000000000; // assign something to input a of alu first
+    alu.b = b0000000000000000; // assign something to input b of alu first
+    
+    case (feeder.q){ // checks the current state of the FSM, feeder
+      feeder.S0: // Test Case #1 - Addition (No Overflow)
+        inputs.selector = b00000;
+        answers.selector = b00000;
+        case_group = b001; // case_group 1, addition
+        case1 = 1; // to represent that the 1st test case of the current case_group 1 is being tested
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b00001){ // if Test Case #1 is chosen to fail
+          alu_actual[0] = -alu_actual[0]; // negate/invert the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S1; // next state is state S1 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+         
+      feeder.S1: // Test Case #2 - Addition (Positive Overflow)
+        inputs.selector = b00001;
+        answers.selector = b00001;
+        case_group = b001; // case_group 1, addition
+        case1 = 0; // reset case1, so that we know only the 2nd test case is being tested
+        case2 = 1; // to represent that the 2nd test case of the current case_group 1 is being tested
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b00010){ // if Test Case #2 is chosen to fail
+          alu_actual[0] = -alu_actual[0]; // negate/invert the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S2; // next state is state S2 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S2: // Test Case #3 - Addition (Negative Overflow)
+        inputs.selector = b00010;
+        answers.selector = b00010;
+        case_group = b001; // case_group 1, addition
+        case2 = 0; // reset case2, so that we know only the 3rd test case is being tested
+        case3 = 1; // to represent that the 3rd test case of the current case_group 1 is being tested
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b00011){ // if Test Case #3 is chosen to fail
+          alu_actual[0] = -alu_actual[0]; // negate/invert the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S3; // next state is state S3 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S3: // Test Case #4 - Addition (Zero)
+        inputs.selector = b00011;
+        answers.selector = b00011;
+        case_group = b001; // case_group 1, addition
+        case3 = 0; // reset case3, so that we know only the 4th test case is being tested
+        case4 = 1; // to represent that the 4th test case of the current case_group 1 is being tested
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b00100){ // if Test Case #4 is chosen to fail
+          alu_actual[0] = -alu_actual[0]; // negate/invert the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.PASS; // next state is state S3 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.PASS:
+        overall = b10;
+        
+      feeder.FAIL:
+        overall = b01;
+    }
+  }
+}

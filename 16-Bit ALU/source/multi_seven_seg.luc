@@ -13,7 +13,7 @@ module multi_seven_seg #(
   const DIGIT_BITS = $clog2(DIGITS);
  
   .clk(clk), .rst(rst) {
-    counter ctr (#DIV(DIV), #SIZE(DIGIT_BITS), #TOP(DIGITS-1));
+    counter ctr (#DIV(DIV), #SIZE(DIGIT_BITS), #TOP(DIGITS-1)); 
   }
  
   seven_seg seg_dec;                      // segment decoder
