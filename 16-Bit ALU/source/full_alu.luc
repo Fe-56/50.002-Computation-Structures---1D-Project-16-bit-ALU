@@ -1,0 +1,54 @@
+module alu (
+//input
+  input alufn[6],
+  input a[16],
+  input b[16],
+//output
+  output out[16],
+  output z,
+  output v,
+  output n
+) {
+//components of the alu
+  adder add;
+  boolean bool;
+  shifter sft;
+  compare cmp;
+  always{
+    // INITIALISE ALL COMPONENTS' INPUTS as A, B, and ALUFN,z,v,n
+  	add.a = a;
+  	add.b = b;
+  	add.alufn = alufn;
+  	z = add.z;
+  	n = add.n;
+  	v = add.v;
+
+  	cmp.alufn =alufn; 
+    cmp.a = a;
+    cmp.b = b;
+  
+  	bool.a = a;
+  	bool.b = b;
+  	bool.alufn = alufn;
+  
+  	sft.a = a;
+  	sft.b = b;
+  	sft.alufn =alufn;
+  //ALUFN 4 and 5 decides the component that is used in the operation 
+  	case(alufn[5:4]){
+  	  b00:
+  	    out = add.out;//Uses the adder module
+  	  b01:
+  	    out = bool.out;//uses boolean module
+  	  b10:
+  	    out = cmp.out;//uses compare module
+  	  b11:
+  	    out = sft.out;//uses the shifter module
+      default:
+        out = 16b0;
+  	 }
+  }
+}
+© 2022 GitHub, Inc.
+Terms
+Priv
