@@ -1,0 +1,27 @@
+module shifter (
+    // Inputs : ALUFN 6-bit signal, 16-bit binary to be shifted, and 16-bit binary indicating magnitude of shift
+    input alufn[6],
+    input a[16],
+    input b[16],
+    // Output : result of shifted 16-bit raw binary by the specified magnitude
+    output out[16]
+  ) {
+
+  always {
+    // Shifter module only needs to see the ALUFN[1] and ALUFN[0]
+    case(alufn[1:0]){
+    // If 00 , then shift left by at most 15 bits
+    b00: 
+      out = a << b[3:0];
+    // If 01, then shift right by at most 15 bits
+    b01:
+      out = a >> b[3:0];
+    // If 11, then shift right arithmetically by at most 15 bits
+    b11:
+      out = $signed(a) >>> b[3:0];
+    // All other cases just return the original input (don't shift)
+    default:
+      out = a;
+    }
+  }
+}
