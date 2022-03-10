@@ -1,0 +1,34 @@
+module rom2 (
+    input selector[5],   
+    output out[19]   //output 19 bits (S+Z+V+N)  
+  ) {
+  
+  const INPUTS = {b0000000000101010000, //23 - multiplier
+                  b1111000010010110000, //22 - shift right arithmetic
+                  b0000010100011010000, //21 - shift right
+                  b1011011110100000000, //20 - shift left
+                  b0010110010001010000, //19 - A
+                  b1111011011101000000, //18 - XOR
+                  b0101101110111010000, //17 - OR 
+                  b0000000000010001000, //16 - AND
+                  b0000000000000000000, //15 - CMPLE(False)
+                  b0000000000000001000, //14 - CMPLE(True and Equal)
+                  b0000000000000001000, //13 - CMPLE(True)
+                  b0000000000000000000, //12 - CMPLT(False)
+                  b0000000000000001000, //11 - CMPLT(True)
+                  b0000000000000000000, //10 - CMPEQ(False)
+                  b0000000000000001000, //9  - CMPEQ(True)
+                  b0000000000000000100, //8  - Sub(zero)
+                  b0000000000000001010, //7  - Sub(negative overflow)
+                  b1000000000000000011, //6  - Sub(positive overflow)
+                  b0000000000000010000, //5 - Sub(no overflow)
+                  b0000000000000000100, //4 - Addition(zero)
+                  b0110111001010010010, //3 - Addition(negative overflow)
+                  b1101010011001011011, //2 - Addition(positive overflow)
+                  b0000000000010000000  //1 - Addition(No overflow)
+    };
+
+  always {
+    out = INPUTS[selector];
+  }
+}
