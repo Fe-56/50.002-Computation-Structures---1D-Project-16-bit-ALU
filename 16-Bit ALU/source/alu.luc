@@ -1,69 +1,56 @@
 module alu (
-    input a[16], // 16 bits of input a
-    input b[16], // 16 bits of input b
-    input alufn[6], //ALUFN[5:0]
-    
-    output z, // output z
-    output v, // output v
-    output n, // output n
-    output alu[16] // output alu
+    input alufn[6],
+    input a[16],
+    input b[16],
+    output alu[16],
+    output z,
+    output v,
+    output n
   ) {
-  
-  arithmetic arithmetic;
-  boolean boolean;
-  compare compare;
-  shifter shifter;
-  
+  adder adder;
+  compare comp;
+  boolean bool;
+  shifter shift;
+
   always {
-    arithmetic.a = a;
-    arithmetic.b = b;
-    arithmetic.alufn = alufn;
+    adder.a = a;
+    adder.b = b;
+    adder.alufn = alufn;
     
-    boolean.a = a;
-    boolean.b = b;
-    boolean.alufn = alufn;
+    comp.z = adder.z;
+    comp.v = adder.v;
+    comp.n = adder.n;
+    comp.alufn = alufn;
     
-    shifter.a = a;
-    shifter.b = b;    
-    shifter.alufn = alufn;
+    bool.a = a;
+    bool.b = b;
+    bool.alufn = alufn;
     
-    compare.v = arithmetic.v;
-    compare.n = arithmetic.n;
-    compare.z = arithmetic.z;
-    compare.alufn = alufn;
+    shift.a = a;
+    shift.b = b[3:0];
+    shift.alufn = alufn;
+    
+    case (alufn[5:4]) {
+    
+      b00:   
+        alu = adder.add;
+   
+      b01:
+        alu = bool.bool;
+        
+      b10:
+        alu = shift.shift;
+        
+      b11:
+        alu = comp.comp;
       
-    
-    case(alufn[5:4]){
-      2b00: 
-        // arithmetic
-        alu = arithmetic.out;
-        z = arithmetic.z;
-        v = arithmetic.v;
-        n = arithmetic.n;
-      2b01:
-        // boolean
-        alu = boolean.boolean;
-        z = 0;
-        v = 0;
-        n = 0;
-      2b10:
-        // shifter
-        alu = shifter.shift;
-        z = 0;
-        v = 0;
-        n = 0;
-      2b11:
-        // compare
-        alu = compare.cmp;        
-        z = 0;
-        v = 0;
-        n = 0;
       default:
-        // default case (error)
-        alu = 0;
-        z = 0;
-        v = 0;
-        n = 0;
-    }   
+        alu = b0;
+        
+      }
+      
+    z = adder.z;
+    v = adder.v;
+    n = adder.n;
   }
 }
