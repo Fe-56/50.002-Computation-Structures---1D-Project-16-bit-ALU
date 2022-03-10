@@ -1,4 +1,4 @@
-module alu (
+module full_alu (
 //input
   input alufn[6],
   input a[16],
@@ -49,6 +49,3 @@ module alu (
   	 }
   }
 }
-© 2022 GitHub, Inc.
-Terms
-Priv
