@@ -45,7 +45,7 @@ module au_top (
     io_led[0][4] = test.case5; // indicate that the 5th test case of the current case_group is being tested
     io_led[0][5] = test.case6; // indicate that the 6th test case of the current case_group is being tested
     io_led[0][6] = test.case7; // indicate that the 7th test case of the current case_group is being tested
-    io_led[1][5:0] = test.case_group;
+    io_led[1][5:0] = test.case_group; // indicate the current case_group of the test case that is being tested
     
     if (test.overall == b00){
       seg.values = {4h6, 4h6, 4h6, 4h6}; // display nothing on 7 segments
