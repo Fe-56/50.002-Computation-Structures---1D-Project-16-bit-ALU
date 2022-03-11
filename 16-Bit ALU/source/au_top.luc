@@ -14,7 +14,7 @@ module au_top (
 {  
   sig rst;                  // reset signal
   counter slowclock(#SIZE(1),#DIV(26), .clk(clk), .rst(rst));
-  tester test(.clk(slowclock.value), .rst(rst));
+  auto_tester test(.clk(slowclock.value), .rst(rst));
   
   .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA

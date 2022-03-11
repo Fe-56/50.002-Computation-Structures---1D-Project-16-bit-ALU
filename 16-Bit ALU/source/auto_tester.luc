@@ -1,4 +1,4 @@
-module tester (
+module auto_tester (
     input clk,  // clock
     input rst,  // reset
     
