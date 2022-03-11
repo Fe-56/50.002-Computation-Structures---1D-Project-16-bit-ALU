@@ -1,4 +1,4 @@
-module auto_tester (
+module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test cases
     input clk,  // clock
     input rst,  // reset
     
