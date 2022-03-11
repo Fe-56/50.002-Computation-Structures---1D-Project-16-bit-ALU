@@ -8,9 +8,9 @@ module tester (
     
     output overall[2],// // overall for all test cases, b00 means still testing, b01 means PASS, b10 means FAIL
     
-    // 6 case_groups, need 3 bits to represent: 
-    // b001) Addition, b010) Subtraction, b011) Comparator, b100) Boolean, b101) Shifter, b110) Multiplier
-    output case_group[3], // so that it will be easier to see exactly what kind of test cases/ALU operations are being tested
+    // 6 case_groups
+    // b000001) Addition, b000010) Subtraction, b000100) Comparator, b001000) Boolean, b010000) Shifter, b100000) Multiplier
+    output case_group[6], // so that it will be easier to see exactly what kind of test cases/ALU operations are being tested
     
     output case1, // to indicate that the first case of the current case_group is being executed
     output case2, // to indicate that the second case of the current case_group is being executed
@@ -48,7 +48,7 @@ module tester (
     overall = b00; // initial output overall b00, to show that it is still testing the test cases
     inputs.selector = b00000; // assign somethiing to inputs.selector first
     answers.selector = b00000; // assign something to anwers.selector first
-    case_group = b000; // assign something to case_group first
+    case_group = b000000; // assign something to case_group first
     case1 = 0; // assign something to case1 first
     case2 = 0; // assign something to case2 first
     case3 = 0; // assign something to case3 first
@@ -64,7 +64,7 @@ module tester (
       feeder.S0: // Test Case #1 - Addition (No Overflow)
         inputs.selector = b00000;
         answers.selector = b00000;
-        case_group = b001; // case_group 1, addition
+        case_group = b000001; // case_group 1, addition
         case1 = 1; // to represent that the 1st test case of the current case_group 1 is being tested
         a = inputs.out[37:22];// A[15:0]
         b = inputs.out[21:6];// B[15:0]
@@ -127,7 +127,7 @@ module tester (
       feeder.S2: // Test Case #3 - Addition (Negative Overflow)
         inputs.selector = b00010;
         answers.selector = b00010;
-        case_group = b001; // case_group 1, addition
+        case_group = b000001; // case_group 1, addition
         case2 = 0; // reset case2, so that we know only the 3rd test case is being tested
         case3 = 1; // to represent that the 3rd test case of the current case_group 1 is being tested
         a = inputs.out[37:22];// A[15:0]
@@ -159,7 +159,7 @@ module tester (
       feeder.S3: // Test Case #4 - Addition (Zero)
         inputs.selector = b00011;
         answers.selector = b00011;
-        case_group = b001; // case_group 1, addition
+        case_group = b000001; // case_group 1, addition
         case3 = 0; // reset case3, so that we know only the 4th test case is being tested
         case4 = 1; // to represent that the 4th test case of the current case_group 1 is being tested
         a = inputs.out[37:22];// A[15:0]
@@ -191,7 +191,7 @@ module tester (
       feeder.S4: // Test Case #5 - Subtraction (No Overflow)
         inputs.selector = b00100;
         answers.selector = b00100;
-        case_group = b010; // case_group 2, subtraction
+        case_group = b000010; // case_group 2, subtraction
         case4 = 0; // reset case4
         case1 = 1; // to represent that the 1st test case of the current case_group 2 is being tested
 
@@ -224,7 +224,7 @@ module tester (
       feeder.S5: // Test Case #6 - Subtraction (Positive Overflow)
         inputs.selector = b00101;
         answers.selector = b00101;
-        case_group = b010; // case_group 2, subtraction
+        case_group = b000010; // case_group 2, subtraction
         case1 = 0; // reset case1
         case2 = 1; // to represent that the 2nd test case of the current case_group 2 is being tested
 
@@ -257,7 +257,7 @@ module tester (
       feeder.S6: // Test Case #7 - Subtraction (Negative Overflow)
         inputs.selector = b00110;
         answers.selector = b00110;
-        case_group = b010; // case_group 2, subtraction
+        case_group = b000010; // case_group 2, subtraction
         case2 = 0; // reset case2
         case3 = 1; // to represent that the 3rd test case of the current case_group 2 is being tested
 
@@ -290,7 +290,7 @@ module tester (
       feeder.S7: // Test Case #8 - Subtraction (Zero)
         inputs.selector = b00111;
         answers.selector = b00111;
-        case_group = b010; // case_group 2, subtraction
+        case_group = b000010; // case_group 2, subtraction
         case3 = 0; // reset case3
         case4 = 1; // to represent that the 4th test case of the current case_group 2 is being tested
 
@@ -323,7 +323,7 @@ module tester (
       feeder.S8: // Test Case #9 - Comparator (Equal, True)
         inputs.selector = b01000;
         answers.selector = b01000;
-        case_group = b011; // case_group 3, comparator
+        case_group = b000100; // case_group 3, comparator
         case4 = 0; // reset case4
         case1 = 1; // to represent that the 1st test case of the current case_group 3 is being tested
 
@@ -356,7 +356,7 @@ module tester (
       feeder.S9: // Test Case #10 - Comparator (Equal, False)
         inputs.selector = b01001;
         answers.selector = b01001;
-        case_group = b011; // case_group 3, comparator
+        case_group = b000100; // case_group 3, comparator
         case1 = 0; // reset case1
         case2 = 1; // to represent that the 2nd test case of the current case_group 3 is being tested
 
@@ -389,7 +389,7 @@ module tester (
       feeder.S10: // Test Case #11 - Comparator (Less Than, True)
         inputs.selector = b01010;
         answers.selector = b01010;
-        case_group = b011; // case_group 3, comparator
+        case_group = b000100; // case_group 3, comparator
         case2 = 0; // reset case2
         case3 = 1; // to represent that the 3rd test case of the current case_group 3 is being tested
 
@@ -422,7 +422,7 @@ module tester (
       feeder.S11: // Test Case #12 - Comparator (Less Than, False)
         inputs.selector = b01011;
         answers.selector = b01011;
-        case_group = b011; // case_group 3, comparator
+        case_group = b000100; // case_group 3, comparator
         case3 = 0; // reset case3
         case4 = 1; // to represent that the 4th test case of the current case_group 3 is being tested
 
@@ -455,7 +455,7 @@ module tester (
       feeder.S12: // Test Case #13 - Comparator (Less Than Equals To, True)
         inputs.selector = b01100;
         answers.selector = b01100;
-        case_group = b011; // case_group 3, comparator
+        case_group = b000100; // case_group 3, comparator
         case4 = 0; // reset case4
         case5 = 1; // to represent that the 5th test case of the current case_group 3 is being tested
 
@@ -488,7 +488,7 @@ module tester (
       feeder.S13: // Test Case #14 - Comparator (Less Than Equals To, True + Equal)
         inputs.selector = b01101;
         answers.selector = b01101;
-        case_group = b011; // case_group 3, comparator
+        case_group = b000100; // case_group 3, comparator
         case5 = 0; // reset case5
         case6 = 1; // to represent that the 6th test case of the current case_group 3 is being tested
 
@@ -521,7 +521,7 @@ module tester (
       feeder.S14: // Test Case #15 - Comparator (Less Than Equals To, False)
         inputs.selector = b01110;
         answers.selector = b01110;
-        case_group = b011; // case_group 3, comparator
+        case_group = b000100; // case_group 3, comparator
         case6 = 0; // reset case6
         case7 = 1; // to represent that the 7th test case of the current case_group 3 is being tested
 
@@ -554,7 +554,7 @@ module tester (
       feeder.S15: // Test Case #16 - Boolean (AND)
         inputs.selector = b01111;
         answers.selector = b01111;
-        case_group = b100; // case_group 4, boolean
+        case_group = b001000; // case_group 4, boolean
         case7 = 0; // reset case7
         case1 = 1; // to represent that the 1st test case of the current case_group 4 is being tested
 
@@ -587,7 +587,7 @@ module tester (
       feeder.S16: // Test Case #17 - Boolean (OR)
         inputs.selector = b10000;
         answers.selector = b10000;
-        case_group = b100; // case_group 4, boolean
+        case_group = b001000; // case_group 4, boolean
         case1 = 0; // reset case1
         case2 = 1; // to represent that the 2nd test case of the current case_group 4 is being tested
 
@@ -620,7 +620,7 @@ module tester (
       feeder.S17: // Test Case #18 - Boolean (XOR)
         inputs.selector = b10001;
         answers.selector = b10001;
-        case_group = b100; // case_group 4, boolean
+        case_group = b001000; // case_group 4, boolean
         case2 = 0; // reset case2
         case3 = 1; // to represent that the 3rd test case of the current case_group 4 is being tested
 
@@ -653,7 +653,7 @@ module tester (
       feeder.S18: // Test Case #19 - Boolean (A)
         inputs.selector = b10010;
         answers.selector = b10010;
-        case_group = b100; // case_group 4, boolean
+        case_group = b001000; // case_group 4, boolean
         case3 = 0; // reset case3
         case4 = 1; // to represent that the 4th test case of the current case_group 4 is being tested
 
@@ -686,7 +686,7 @@ module tester (
       feeder.S19: // Test Case #20 - Shifter (Shift Left)
         inputs.selector = b10011;
         answers.selector = b10011;
-        case_group = b101; // case_group 5, shifter
+        case_group = b010000; // case_group 5, shifter
         case4 = 0; // reset case4
         case1 = 1; // to represent that the 1st test case of the current case_group 5 is being tested
 
@@ -719,7 +719,7 @@ module tester (
       feeder.S20: // Test Case #21 - Shifter (Shift Right)
         inputs.selector = b10100;
         answers.selector = b10100;
-        case_group = b101; // case_group 5, shifter
+        case_group = b010000; // case_group 5, shifter
         case1 = 0; // reset case1
         case2 = 1; // to represent that the 2nd test case of the current case_group 5 is being tested
 
@@ -752,7 +752,7 @@ module tester (
       feeder.S21: // Test Case #22 - Shifter (Arithmetic Shift Right)
         inputs.selector = b10101;
         answers.selector = b10101;
-        case_group = b101; // case_group 5, shifter
+        case_group = b010000; // case_group 5, shifter
         case2 = 0; // reset case2
         case3 = 1; // to represent that the 3rd test case of the current case_group 5 is being tested
 
@@ -785,7 +785,7 @@ module tester (
       feeder.S22: // Test Case #23 - Multiplication
         inputs.selector = b10110;
         answers.selector = b10110;
-        case_group = b110; // case_group 6, multiplication
+        case_group = b100000; // case_group 6, multiplication
         case3 = 0; // reset case3
         case1 = 1; // to represent that the 1st test case of the current case_group 6 is being tested
 

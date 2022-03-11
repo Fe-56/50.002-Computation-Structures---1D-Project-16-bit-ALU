@@ -17,6 +17,10 @@ module alu (
     adder.b = b;
     adder.alufn = alufn;
     
+    z = adder.z;
+    v = adder.v;
+    n = adder.n;
+    
     comp.z = adder.z;
     comp.v = adder.v;
     comp.n = adder.n;
@@ -37,20 +41,21 @@ module alu (
    
       b01:
         alu = bool.bool;
+        z = 0;
+        v = 0;
+        n = 0;
         
       b10:
         alu = shift.shift;
+        z = 0;
+        v = 0;
+        n = 0;
         
       b11:
         alu = comp.comp;
       
       default:
-        alu = b0;
-        
-      }
-      
-    z = adder.z;
-    v = adder.v;
-    n = adder.n;
+        alu = 16b0;
+    }
   }
 }
