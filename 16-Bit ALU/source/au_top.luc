@@ -13,7 +13,7 @@ module au_top (
 
 {  
   sig rst;                  // reset signal
-  counter slowclock(#SIZE(1),#DIV(27), .clk(clk), .rst(rst));
+  counter slowclock(#SIZE(1),#DIV(26), .clk(clk), .rst(rst));
   tester test(.clk(slowclock.value), .rst(rst));
   
   .clk(clk) {
@@ -38,25 +38,25 @@ module au_top (
     
     test.fail_case = io_dip[0][4:0]; // to select the specific test case to fail
     
-    io_led[0][0] = test.case1;
-    io_led[0][1] = test.case2;
-    io_led[0][2] = test.case3;
-    io_led[0][3] = test.case4;
-    io_led[0][4] = test.case5;
-    io_led[0][5] = test.case6;
-    io_led[0][6] = test.case7;
+    io_led[0][0] = test.case1; // indicate that the 1st test case of the current case_group is being tested
+    io_led[0][1] = test.case2; // indicate that the 2nd test case of the current case_group is being tested
+    io_led[0][2] = test.case3; // indicate that the 3rd test case of the current case_group is being tested
+    io_led[0][3] = test.case4; // indicate that the 4th test case of the current case_group is being tested
+    io_led[0][4] = test.case5; // indicate that the 5th test case of the current case_group is being tested
+    io_led[0][5] = test.case6; // indicate that the 6th test case of the current case_group is being tested
+    io_led[0][6] = test.case7; // indicate that the 7th test case of the current case_group is being tested
     io_led[1][5:0] = test.case_group;
     
     if (test.overall == b00){
-      seg.values = {4h6, 4h6, 4h6, 4h6}; // empty
+      seg.values = {4h6, 4h6, 4h6, 4h6}; // display nothing on 7 segments
     }
     
     else if (test.overall == b10){
-      seg.values = {4h0, 4h1, 4h2, 4h2}; // PASS
+      seg.values = {4h0, 4h1, 4h2, 4h2}; // display PASS on 7 segments
     }
     
     else if (test.overall == b01){
-      seg.values = {4h3, 4h1, 4h4, 4h5}; // FAIL
+      seg.values = {4h3, 4h1, 4h4, 4h5}; // display FAIL on 7 segment
       }
         
     io_seg = ~seg.seg;      // connect segments to the driver

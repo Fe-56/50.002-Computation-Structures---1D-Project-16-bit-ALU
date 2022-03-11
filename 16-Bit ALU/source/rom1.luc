@@ -1,4 +1,4 @@
-module rom1 (
+module rom1 ( // contains the inputs thare are to be fed into the alu via the fsm
     input selector[5],   
     output out[38]        //output 38 bits (A+B+ALUFN)
   ) {

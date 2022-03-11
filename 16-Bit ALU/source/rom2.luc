@@ -1,4 +1,4 @@
-module rom2 (
+module rom2 ( // contains the expected answers and outputs by the alu to be compared against the actual output of the alu
     input selector[5],   
     output out[19]   //output 19 bits (S+Z+V+N)  
   ) {
