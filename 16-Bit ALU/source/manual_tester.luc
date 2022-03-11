@@ -1,0 +1,120 @@
+module manual_tester ( // manual-tester module for the 16-bit ALU
+    input clk,  // clock
+    input rst,  // reset
+    
+    input button[2], // button[1]: center io_button press input to toggle between the states of the FSM controller, button[4]: right io_button press input to reset the manual tester
+    // i.e. button[2] = center io_button (button[1]), right io_button (button[4])
+    
+    input data[16], // 16-bit input from io_dip[1] and io_dip[0] to get the data for both A[15:0] and B[15:0] for the 16-bit ALU
+    input alufn[6], // 6-bit input from io_dip[2][5:0] to get ALUFN[5:0] for the 16-bit ALU
+    output s[16], // 16-bit output ALU[15:0] from the 16-bit ALU, also to store the current input of the data[16] input
+    output z, // 1-bit output z from the 16-bit ALU
+    output v, // 1-bit output v from the 16-bit ALU
+    output n, // 1-bit output n from the 16-bit ALU
+    output display[7] // 7-bit output for the 7-segments display to indicate whatever the user should input at that state
+) 
+
+{
+  dff input_a[16](#INIT(0), .clk(clk), .rst(rst)); // register to store the A[15:0] input for a clock cycle
+  dff input_b[16](#INIT(0), .clk(clk), .rst(rst)); // register to store the B[15:0] input for a clock cycle
+  dff input_alufn[6](#INIT(0), .clk(clk), .rst(rst)); // register to store the ALUFN[5:0] input for a clock cycle
+  dff output_s[16](#INIT(0), .clk(clk), .rst(rst)); // register to store the ALU[15:0] output for a clock cycle
+  dff output_z(#INIT(0), .clk(clk), .rst(rst)); // register to store the Z output for a clock cycle
+  dff output_v(#INIT(0), .clk(clk), .rst(rst)); // register to store the V output for a clock cycle
+  dff output_n(#INIT(0), .clk(clk), .rst(rst)); // register to store the N output for a clock cycle
+  dff output_display[7](#INIT(0), .clk(clk), .rst(rst)); // register to store the display output for the 7 segments display for a clock cycle
+  fsm controller(.clk(clk), .rst(rst)) = {AINPUT, // wait for the A[15:0] input
+                                          BINPUT,  // wait for the B[15:0] input
+                                          ALUFNINPUT,  // wait for the ALUFN[5:0] input
+                                          OUTPUT}; // wait for the output ALU[15:0], Z, V, N
+  alu alu;
+  
+  always {
+    alu.a = input_a.q; // initialise alu.a with something first
+    alu.b = input_b.q; // initialise alu.b with something first
+    alu.alufn = input_alufn.q; // intialise alu.alufn with something first
+    
+    case(controller.q){
+      controller.AINPUT:
+        output_display.d = 7b1110111; // display A on the 7-segments, store in output_display register
+        output_s.d = data; // stores whatever is being inputted on the io_dip[1] and io_dip[0] currently on the io_led[1] and io_led[0]
+        
+        if (button[1]){ // upon the pressing of the center io_button
+          input_a.d = data; // store the A[15:0] into the input_a register
+          controller.d = controller.BINPUT; // move to the next state BINPUT
+        }
+        
+        else{
+          controller.d = controller.AINPUT; // keep waiting for the A[15:0] to be inputted
+        }
+        
+      controller.BINPUT:
+        output_display.d = 7b1111111; // display B on the 7-segments, store in output_display register
+        output_s.d = data; // stores whatever is being inputted on the io_dip[1] and io_dip[0] currently on the io_led[1] and io_led[0]
+        
+        if (button[1]){ // upon the pressing of the center io_button
+          input_b.d = data; // store the B[15:0] into the input_b register
+          controller.d = controller.ALUFNINPUT; // move to the next state BINPUT
+        }
+        
+        else{
+          controller.d = controller.BINPUT; // keep waiting for the B[15:0] to be inputted
+        }
+        
+      controller.ALUFNINPUT:
+        output_display.d = 7b1000111; // display F on the 7-segments, store in output_display register
+          output_s.d[15:6] = 0; // reset the s[15:6] that may be carried over from the BINPUT state
+          output_s.d[5:0] = alufn; // displays whatever is being inputted on the io_dip[0][5:0] currently on the io_led[0][5:0]
+        
+        if (button[1]){ // upon the pressing of the center io_button
+          input_alufn.d = alufn; // store the ALUFN[5:0] into the input_alufn register
+          controller.d = controller.OUTPUT; // move to the next state OUTPUT
+        }
+        
+        else{
+          controller.d = controller.ALUFNINPUT; // keep waiting for the ALUFN[5:0] to be inputted
+        }
+        
+      controller.OUTPUT:
+        output_display.d = 7b1111110; // display 0 on the 7-segments, store in output_display register
+        output_s.d = alu.alu; // stores the ALU[15:0] output of the ALU onto output_s register
+        output_z.d = alu.z; // stores the Z output of the ALU onto output_z register
+        output_v.d = alu.v; // stores the V output of the ALU onto output_v register
+        output_n.d = alu.n; // stores the N output of the ALU onto output_n register
+        
+        if (button[1]){ // upon the pressing of the center io_button
+          // reset all the registers and go back to state AINPUT
+          input_a.d = 0;
+          input_b.d = 0;
+          input_alufn.d = 0;
+          output_s.d = 0;
+          output_z.d = 0;
+          output_v.d = 0;
+          output_n.d = 0;
+          controller.d = controller.AINPUT; // go back to state AINPUT
+        }
+        
+        else{
+          controller.d = controller.OUTPUT;
+        }
+    }
+    
+    if (button[0]){ // if at any point in time, the right i_o button is pressed
+      // reset all the registers and go back to state AINPUT
+      input_a.d = 0;
+      input_b.d = 0;
+      input_alufn.d = 0;
+      output_s.d = 0;
+      output_z.d = 0;
+      output_v.d = 0;
+      output_n.d = 0;
+      controller.d = controller.AINPUT; // go back to state AINPUT
+    }
+    
+    s = output_s.q; // display the ALU[15:0] on io_led[1] and io_led[0]
+    z = output_z.q; // display the Z on io_led[2][2]
+    v = output_v.q; // display the V on io_led[2][1]
+    n = output_n.q; // display the N on io_led[2][0]
+    display = output_display.q; // display the current display onto the 7-segments display
+  }
+}
