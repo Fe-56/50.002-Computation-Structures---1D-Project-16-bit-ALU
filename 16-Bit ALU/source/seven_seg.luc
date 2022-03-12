@@ -13,6 +13,8 @@ module seven_seg (
       4: segs = 7b0000110; // I
       5: segs = 7b0111000; // L
       6: segs = 7b0000000; // empty
+      7: segs = 7b1111100; // B
+      8: segs = 7b0111111; // O
       default: segs = 7b0000000;
     }
   }
