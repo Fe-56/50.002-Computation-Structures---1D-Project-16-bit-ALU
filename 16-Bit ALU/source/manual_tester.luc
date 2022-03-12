@@ -39,7 +39,7 @@ module manual_tester ( // manual-tester module for the 16-bit ALU
         display = b001; // display A on the 7-segments
         output_s.d = data; // stores whatever is being inputted on the io_dip[1] and io_dip[0] currently on the io_led[1] and io_led[0]
         
-        if (button[1]){ // upon the pressing of the center io_button
+        if (button[1]){ // upon the pressing of the down io_button
           input_a.d = data; // store the A[15:0] into the input_a register
           controller.d = controller.BINPUT; // move to the next state BINPUT
         }
@@ -52,7 +52,7 @@ module manual_tester ( // manual-tester module for the 16-bit ALU
         display = b010; // display B on the 7-segments
         output_s.d = data; // stores whatever is being inputted on the io_dip[1] and io_dip[0] currently on the io_led[1] and io_led[0]
         
-        if (button[1]){ // upon the pressing of the center io_button
+        if (button[1]){ // upon the pressing of the down io_button
           input_b.d = data; // store the B[15:0] into the input_b register
           controller.d = controller.ALUFNINPUT; // move to the next state BINPUT
         }
@@ -66,7 +66,7 @@ module manual_tester ( // manual-tester module for the 16-bit ALU
         output_s.d[15:6] = 0; // reset the s[15:6] that may be carried over from the BINPUT state
         output_s.d[5:0] = data[5:0]; // displays whatever is being inputted on the io_dip[0][5:0] currently on the io_led[0][5:0]
         
-        if (button[1]){ // upon the pressing of the center io_button
+        if (button[1]){ // upon the pressing of the down io_button
           input_alufn.d = data[5:0]; // store the ALUFN[5:0] into the input_alufn register
           controller.d = controller.OUTPUT; // move to the next state OUTPUT
         }
@@ -82,7 +82,7 @@ module manual_tester ( // manual-tester module for the 16-bit ALU
         output_v.d = alu.v; // stores the V output of the ALU onto output_v register
         output_n.d = alu.n; // stores the N output of the ALU onto output_n register
         
-        if (button[1]){ // upon the pressing of the center io_button
+        if (button[1]){ // upon the pressing of the down io_button
           // reset all the registers and go back to state AINPUT
           input_a.d = 0;
           input_b.d = 0;
@@ -99,7 +99,7 @@ module manual_tester ( // manual-tester module for the 16-bit ALU
         }
     }
     
-    if (button[0]){ // if at any point in time, the down i_o button is pressed
+    if (button[0]){ // if at any point in time, the center i_o button is pressed
       // reset all the registers and go back to state AINPUT
       input_a.d = 0;
       input_b.d = 0;
