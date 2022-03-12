@@ -19,3 +19,7 @@ Please note that you will need to add the following components in Alchitry Labs 
 - decoder.luc
 - edge_detector.luc
 - pipeline.luc
+
+## Brief Guide
+This guide briefly explains how you may use and interact with the Alchitry AU to conduct both manual and auto testing.
+Link: https://sutdapac-my.sharepoint.com/:b:/g/personal/fuoen_lim_mymail_sutd_edu_sg/Ea4JRWW2MLRErhvWa-UvjVABTkIhC3XJgveD8p0zVkvC5w?e=SDg9yQ
