@@ -17,7 +17,7 @@ module adder (
     n = 0;
     add = a;
   
-    if (alufn[1:0] == b10) {
+    if (alufn[1:0] == b10) { // MUL (multiplication)
     
       add = a * b;
           
@@ -25,10 +25,10 @@ module adder (
     
       twoscomp_b = b^16x{alufn[0]};
       
-      if (alufn[0]){
+      if (alufn[0]){ // SUB (subtraction)
       addtemp = a - b;}
-      else {
-      addtemp = a + b;}
+      else { // ADD (addition)
+      addtemp = a + b;} 
       add = addtemp;
       
       z = (addtemp == 16x{0});

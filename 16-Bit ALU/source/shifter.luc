@@ -9,15 +9,15 @@ module shifter (
   always {
     case(alufn[3:0]){
       
-      //shift left
+      //SHL (shift left)
       4b0000:
         shift = a<<b[3:0]; 
       
-      //shift right
+      //SHR (shift right)
       4b0001:
         shift = a>>b[3:0];
       
-      //shift right signed
+      //SHA (shift right signed)
       4b0011:
         shift = $signed(a)>>>b[3:0]; 
       default:

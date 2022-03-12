@@ -6,25 +6,25 @@ module boolean (
     ) {
     always {
         case (alufn[3:0]) { //based on the last 4 values of the alufn, decide which case and calculate bool
-            b1000:
+            b1000: // AND
                 bool = a & b;
                 
-            b1110:
+            b1110: // OR
                 bool = a | b;
                 
-            b0110:
+            b0110: // XOR
                 bool = a ^ b;
                 
-            b1010:
+            b1010: // "A"
                 bool = a;
             
-            b1100:
+            b1100: // "B"
                 bool = b;
 
-            b0001:
+            b0001: // NOR
                 bool = ~a & ~b;
 
-            b0111:
+            b0111: // NAND
                 bool = ~a | ~b;
             
             b1111:
