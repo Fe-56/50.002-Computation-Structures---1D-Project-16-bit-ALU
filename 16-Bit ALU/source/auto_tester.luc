@@ -6,6 +6,8 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
     // from b00001 (Test Case #1) to b10111 (Test Case #23)
     input fail_case[5],
     
+    input switch[2], // io_dip[2][7] is the toggle to start the auto_tester, io_dip[2][6] is the toggle to reset the auto_tester
+    
     output overall[2],// // overall for all test cases, b00 means still testing, b01 means PASS, b10 means FAIL
     
     // 6 case_groups
@@ -29,7 +31,8 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
 ) 
 
 {
-  fsm feeder(.clk(clk), .rst(rst)) = {S0, S1, S2, S3, // case_group b001, addition
+  fsm feeder(.clk(clk), .rst(rst)) = {START, //starting state
+                                      S0, S1, S2, S3, // case_group b001, addition
                                       S4, S5, S6, S7, // case_group 0b010, subtraction
                                       S8, S9, S10, S11, S12, S13, S14, // case_group 0b011, comparator
                                       S15, S16, S17, S18, // case_group 0b100, boolean
@@ -61,6 +64,15 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
     alu.b = b0000000000000000; // assign something to input b of alu first
     
     case (feeder.q){ // checks the current state of the FSM, feeder
+      feeder.START: // starting state
+        if (switch[1]){ // if io_dip[2][7] is high
+          feeder.d = feeder.S0; // commence the auto tester by testing Test Case #0
+        }
+        
+        else {
+          feeder.d = feeder.START; // keep waiting for io_dip[2][7] to be high
+        }
+      
       feeder.S0: // Test Case #1 - Addition (No Overflow)
         inputs.selector = b00000;
         answers.selector = b00000;
@@ -818,8 +830,24 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
       feeder.PASS:
         overall = b10;
         
+        if (switch[0]){ // if io_dip[2][6] is high, then reset the auto_tester by going back to the START state
+          feeder.d = feeder.START; // go back to the START state
+        }
+        
+        else{ // else, keep waiting for the io_dip[2][6] to be high
+          feeder.d = feeder.PASS;
+        }
+        
       feeder.FAIL:
         overall = b01;
+        
+        if (switch[0]){ // if io_dip[2][6] is high, then reset the auto_tester by going back to the START state
+          feeder.d = feeder.START; // go back to the START state
+        }
+        
+        else{ // else, keep waiting for the io_dip[2][6] to be high
+          feeder.d = feeder.PASS;
+        }
     }
   }
 }

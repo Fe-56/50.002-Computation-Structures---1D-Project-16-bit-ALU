@@ -13,8 +13,19 @@ module au_top (
 
 {  
   sig rst;                  // reset signal
-  counter slowclock(#SIZE(1),#DIV(26), .clk(clk), .rst(rst));
-  auto_tester test(.clk(slowclock.value), .rst(rst));
+  counter slowclock(#SIZE(1),#DIV(26), .clk(clk), .rst(rst)); // slower clock for the auto_test so that we can actually see the io_led lighting up as the test cases are being run through
+  auto_tester auto_test(.clk(slowclock.value), .rst(rst)); // the auto tester module
+  manual_tester manual_test(.clk(clk), .rst(rst)); // the manual tester module
+  
+  fsm test(.clk(clk), .rst(rst)) = {MANUAL, AUTO}; // FSM to toggle between manual and auto testing
+  
+  button_conditioner button_cond[3](.clk(clk)); // for manual_test and fsm test
+  edge_detector button_detector[3](#RISE(1), #FALL(0), .clk(clk)); // for manual_test and fsm test
+  
+  //button_conditioner button_cond_auto[2](.clk(slowclock.value)); // for auto_test
+  //edge_detector button_detector_auto[2](#RISE(1), #FALL(0), .clk(slowclock.value)); // for auto_test
+  
+  multi_seven_seg seg(.clk(clk), .rst(rst));
   
   .clk(clk) {
     // The reset conditioner is used to synchronize the reset signal to the FPGA
@@ -22,7 +33,6 @@ module au_top (
     reset_conditioner reset_cond;
     
     .rst(rst) {
-      multi_seven_seg seg;
     }
   }
   
@@ -34,32 +44,87 @@ module au_top (
      
     led = 8h00;             // turn LEDs off
     
-    seg.values = {4h6, 4h6, 4h6, 4h6};
+    io_led = 3x{{8h00}};    // turn LEDs off
+    io_seg = 8hff;          // turn segments off
+    io_sel = 4b0111;        // select first digit
     
-    test.fail_case = io_dip[0][4:0]; // to select the specific test case to fail
+    button_cond.in = io_button[2:0]; // down button (io_button[2]), center button (io_button[1]), up button (io_button[0])
+    button_detector.in = button_cond.out;
     
-    io_led[0][0] = test.case1; // indicate that the 1st test case of the current case_group is being tested
-    io_led[0][1] = test.case2; // indicate that the 2nd test case of the current case_group is being tested
-    io_led[0][2] = test.case3; // indicate that the 3rd test case of the current case_group is being tested
-    io_led[0][3] = test.case4; // indicate that the 4th test case of the current case_group is being tested
-    io_led[0][4] = test.case5; // indicate that the 5th test case of the current case_group is being tested
-    io_led[0][5] = test.case6; // indicate that the 6th test case of the current case_group is being tested
-    io_led[0][6] = test.case7; // indicate that the 7th test case of the current case_group is being tested
-    io_led[1][5:0] = test.case_group; // indicate the current case_group of the test case that is being tested
+    seg.values = {4h6, 4h6, 4h6, 4h6}; // display nothing on the 7-segments display
     
-    if (test.overall == b00){
-      seg.values = {4h6, 4h6, 4h6, 4h6}; // display nothing on 7 segments
-    }
+    // connect the inputs to the manual_test module
+    manual_test.button = button_detector.out[2:1]; // down button (io_button[2]), center button (io_button[1])
+    manual_test.data[15:8] = io_dip[1];
+    manual_test.data[7:0] = io_dip[0];
     
-    else if (test.overall == b10){
-      seg.values = {4h0, 4h1, 4h2, 4h2}; // display PASS on 7 segments
-    }
+    // connect the inputs to the auto_test module
+    auto_test.switch = io_dip[2][7:6]; // io_dip[2][7] to start the auto_test, io_dip[2][6] to reset the auto_test
+    auto_test.fail_case = io_dip[0][4:0]; // to select the specific test case to fail
     
-    else if (test.overall == b01){
-      seg.values = {4h3, 4h1, 4h4, 4h5}; // display FAIL on 7 segment
-      }
+    case(test.q){
+      test.MANUAL:
+        io_led[0] = manual_test.s[7:0];
+        io_led[1] = manual_test.s[15:8];
+        io_led[2][2] = manual_test.z;
+        io_led[2][1] = manual_test.v;
+        io_led[2][0] = manual_test.n;
         
-    io_seg = ~seg.seg;      // connect segments to the driver
-    io_sel = ~seg.sel;      // connect digit select to the driver
+        if (manual_test.display == b000){ // display nothing on 7-segments
+          seg.values = {4h6, 4h6, 4h6, 4h6};
+        }
+          
+        else if (manual_test.display == b001){ // display A on 7-segments
+          seg.values = {4h6, 4h6, 4h6, 4h1};
+        }
+        
+        else if (manual_test.display == b010){ // display B on 7-segments
+          seg.values = {4h6, 4h6, 4h6, 4h7};
+        }
+        
+        else if (manual_test.display == b011){ // display F on 7-segments
+          seg.values = {4h6, 4h6, 4h6, 4h3};
+        }
+        
+        else if (manual_test.display == b100){ // display O on 7-segments
+          seg.values = {4h6, 4h6, 4h6, 4h8};
+        }
+        
+        io_seg = ~seg.seg;      // connect segments to the driver
+        io_sel = ~seg.sel;      // connect digit select to the driver
+        
+        if (button_detector.out[0]){ // press the up button to toggle to auto_test module
+          test.d = test.AUTO; // goes to the AUTO state
+        }
+        
+      test.AUTO:
+        io_led[0][0] = auto_test.case1; // indicate that the 1st test case of the current case_group is being tested
+        io_led[0][1] = auto_test.case2; // indicate that the 2nd test case of the current case_group is being tested
+        io_led[0][2] = auto_test.case3; // indicate that the 3rd test case of the current case_group is being tested
+        io_led[0][3] = auto_test.case4; // indicate that the 4th test case of the current case_group is being tested
+        io_led[0][4] = auto_test.case5; // indicate that the 5th test case of the current case_group is being tested
+        io_led[0][5] = auto_test.case6; // indicate that the 6th test case of the current case_group is being tested
+        io_led[0][6] = auto_test.case7; // indicate that the 7th test case of the current case_group is being tested
+        io_led[1][5:0] = auto_test.case_group; // indicate the current case_group of the test case that is being tested
+    
+        if (auto_test.overall == b00){
+          seg.values = {4h6, 4h6, 4h6, 4h6}; // display nothing on 7 segments
+        }
+    
+        else if (auto_test.overall == b10){
+          seg.values = {4h0, 4h1, 4h2, 4h2}; // display PASS on 7 segments
+        }
+    
+        else if (auto_test.overall == b01){
+          seg.values = {4h3, 4h1, 4h4, 4h5}; // display FAIL on 7 segment
+        }
+        
+        io_seg = ~seg.seg;      // connect segments to the driver
+        io_sel = ~seg.sel;      // connect digit select to the driver
+        
+        if (button_detector.out[0]){ // press the up button toggle to manual_test module
+          test.d = test.MANUAL; // goes to the MANUAL state
+        }
+        
   }
 }

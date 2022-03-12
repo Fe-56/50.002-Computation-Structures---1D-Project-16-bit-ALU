@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="16-Bit ALU" board="Alchitry Au" language="Lucid" version="3">
   <files>
+    <component>pipeline.luc</component>
     <src>multi_seven_seg.luc</src>
     <src>rom2.luc</src>
     <src>auto_tester.luc</src>
@@ -16,6 +17,8 @@
     <src>compare.luc</src>
     <src>shifter.luc</src>
     <component>reset_conditioner.luc</component>
+    <component>edge_detector.luc</component>
+    <component>button_conditioner.luc</component>
     <constraint lib="true">alchitry.acf</constraint>
     <constraint lib="true">io.acf</constraint>
     <constraint lib="true">au.xdc</constraint>
