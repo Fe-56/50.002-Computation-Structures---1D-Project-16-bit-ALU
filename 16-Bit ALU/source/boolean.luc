@@ -27,7 +27,7 @@ module boolean (
             b0111: // NAND
                 bool = ~a | ~b;
             
-            b1111:
+            b1111: // 1111111111111111: 16b1
                 bool = 16hffff;
         
             default:
