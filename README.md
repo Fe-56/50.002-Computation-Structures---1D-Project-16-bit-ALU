@@ -1,7 +1,5 @@
 # 50.002 Computation Structures: 1D Project Checkoff 1 (16-bit ALU)
 
-This repository contains the code for 16-bit ALU, as well as the tester (including FSM and ROMs) to test the various functionalities of the ALU. 
-
 Done by Group 1:
 - 1004997	Brandon Ong Jian Xun
 - 1005016	Goh Ying Ming, Bryce
@@ -11,6 +9,23 @@ Done by Group 1:
 - 1005374	Nguyen Thai Huy
 - 1005125	Lim Fuo En
 - 1005647	Lim Shu Hui Pamela
+---
+This repository contains the code for 16-bit ALU, as well as the tester (including FSM and ROMs) to test the various functionalities of the ALU. 
+
+The 16-bit ALU **inputs**:
+- A[15:0]
+- B[15:0]
+- ALUFN[5:0]
+
+The 16-bit ALU **outputs**:
+- ALU[15:0]
+- Z
+- V
+- N
+
+It also contains code for both the **manual tester** and the **auto tester**.
+
+---
 
 ## Note
 Please note that you will need to add the following components in Alchitry Labs before the program can even be flashed into the Alchitry AU:
@@ -19,6 +34,8 @@ Please note that you will need to add the following components in Alchitry Labs 
 - decoder.luc
 - edge_detector.luc
 - pipeline.luc
+
+---
 
 ## Brief Guide
 This guide briefly explains how you may use and interact with the Alchitry AU to conduct both manual and auto testing.
