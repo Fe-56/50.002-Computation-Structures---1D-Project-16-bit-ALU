@@ -846,7 +846,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         else{ // else, keep waiting for the io_dip[2][6] to be high
-          feeder.d = feeder.PASS;
+          feeder.d = feeder.FAIL;
         }
     }
   }
