@@ -11,3 +11,11 @@ Done by Group 1:
 - 1005374	Nguyen Thai Huy
 - 1005125	Lim Fuo En
 - 1005647	Lim Shu Hui Pamela
+
+## Note
+Please note that you will need to add the following components in Alchitry Labs before the program can even be flashed into the Alchitry AU:
+- button_conditioner.luc
+- counter.luc
+- decoder.luc
+- edge_detector.luc
+- pipeline.luc
