@@ -105,6 +105,7 @@ module au_top (
         io_led[0][4] = auto_test.case5; // indicate that the 5th test case of the current case_group is being tested
         io_led[0][5] = auto_test.case6; // indicate that the 6th test case of the current case_group is being tested
         io_led[0][6] = auto_test.case7; // indicate that the 7th test case of the current case_group is being tested
+        io_led[0][7] = auto_test.case8; // indicate that the 8th test case of the current case_group is being tested
         io_led[1][5:0] = auto_test.case_group; // indicate the current case_group of the test case that is being tested
     
         if (auto_test.overall == b00){

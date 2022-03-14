@@ -20,8 +20,9 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
     output case4, // to indicate that the fourth case of the current case_group is being executed
     output case5, // to indicate that the fifth case of the current case_group is being executed
     output case6, // to indicate that the sixth case of the current case_group is being executed
-    output case7 // to indicate that the seventh case of the current case_group is being executed
-    // need up till case7 because the case_group with the largest number of test cases (case_group b011, Comparator) has 7 test cases
+    output case7, // to indicate that the seventh case of the current case_group is being executed
+    output case8 // to indicate that the eight case of the current case_group is being executed
+    // need up till case8 because the case_group with the largest number of test cases (case_group b010000, Boolean) has 8 test cases
     
     // for example, test case #3 is an addition test case that results in a zero, thus this is under
     // case_group = b001 (1), where case6 = 0, case 
@@ -32,15 +33,15 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
 
 {
   fsm feeder(.clk(clk), .rst(rst)) = {START, //starting state
-                                      S0, S1, S2, S3, // case_group b001, addition
-                                      S4, S5, S6, S7, // case_group 0b010, subtraction
-                                      S8, S9, S10, S11, S12, S13, S14, // case_group 0b011, comparator
-                                      S15, S16, S17, S18, // case_group 0b100, boolean
-                                      S19, S20, S21, // case_group 0b101, shifter
-                                      S22, // case_group 0b110, multiplier
+                                      S0, S1, S2, S3, // case_group b000001, addition
+                                      S4, S5, S6, S7, // case_group b000010, subtraction
+                                      S8, S9, S10, S11, S12, S13, S14, // case_group b000100, comparator
+                                      S15, S16, S17, S18, S19, S20, S21, S22, // case_group b001000, boolean
+                                      S23, S24, S25, // case_group b010000, shifter
+                                      S26, // case_group b100000, multiplier
                                       PASS, FAIL};
-  // a total of 25 states, 23 states to represent each of the 23 test cases, PASS state to represent all 23 test cases passed,
-  // FAIL state to represent that at least one of the 23 test cases failed
+  // a total of 29 states, 27 states to represent each of the 27 test cases, PASS state to represent all 27 test cases passed,
+  // FAIL state to represent that at least one of the 27 test cases failed
   
   rom1 inputs; // the ROM that provides the inputs (38 bits, A[15:0] + B[15:0] + ALUFN[5:0], concatenated)
   rom2 answers; // the ROM that provides the expected answers (19 bits, ALU[15:0] + Z + V + N, concatenated)
@@ -59,6 +60,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
     case5 = 0; // assign something to case5 first
     case6 = 0; // assign something to case6 first
     case7 = 0; // assign something to case7 first
+    case8 = 0; // assign something to case8 first
     alu.alufn = b000000; // assign something to input alufn of alu first
     alu.a = b0000000000000000; // assign something to input a of alu first
     alu.b = b0000000000000000; // assign something to input b of alu first
@@ -695,12 +697,12 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
           feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
         }
         
-      feeder.S19: // Test Case #20 - Shifter (Shift Left)
+      feeder.S19: // Test Case #20 - Boolean (B)
         inputs.selector = b10011;
         answers.selector = b10011;
-        case_group = b010000; // case_group 5, shifter
+        case_group = b001000; // case_group 4, boolean
         case4 = 0; // reset case4
-        case1 = 1; // to represent that the 1st test case of the current case_group 5 is being tested
+        case5 = 1; // to represent that the 5th test case of the current case_group 4 is being tested
 
         a = inputs.out[37:22];// A[15:0]
         b = inputs.out[21:6];// B[15:0]
@@ -728,12 +730,12 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
           feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
         }
         
-      feeder.S20: // Test Case #21 - Shifter (Shift Right)
+      feeder.S20: // Test Case #21 - Boolean (NOR)
         inputs.selector = b10100;
         answers.selector = b10100;
-        case_group = b010000; // case_group 5, shifter
-        case1 = 0; // reset case1
-        case2 = 1; // to represent that the 2nd test case of the current case_group 5 is being tested
+        case_group = b001000; // case_group 4, boolean
+        case5 = 0; // reset case5
+        case6 = 1; // to represent that the 6th test case of the current case_group 4 is being tested
 
         a = inputs.out[37:22];// A[15:0]
         b = inputs.out[21:6];// B[15:0]
@@ -761,12 +763,12 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
           feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
         }
         
-      feeder.S21: // Test Case #22 - Shifter (Arithmetic Shift Right)
+      feeder.S21: // Test Case #22 - Boolean (NAND)
         inputs.selector = b10101;
         answers.selector = b10101;
-        case_group = b010000; // case_group 5, shifter
-        case2 = 0; // reset case2
-        case3 = 1; // to represent that the 3rd test case of the current case_group 5 is being tested
+        case_group = b001000; // case_group 4, boolean
+        case6 = 0; // reset case6
+        case7 = 1; // to represent that the 7th test case of the current case_group 4 is being tested
 
         a = inputs.out[37:22];// A[15:0]
         b = inputs.out[21:6];// B[15:0]
@@ -794,9 +796,141 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
           feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
         }
         
-      feeder.S22: // Test Case #23 - Multiplication
+      feeder.S22: // Test Case #23 - Boolean (16b1)
         inputs.selector = b10110;
         answers.selector = b10110;
+        case_group = b001000; // case_group 4, boolean
+        case7 = 0; // reset case7
+        case8 = 1; // to represent that the 8th test case of the current case_group 4 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b10111){ // if Test Case #23 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S23; // next state is state S23 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S23: // Test Case #24 - Shifter (Shift Left)
+        inputs.selector = b10111;
+        answers.selector = b10111;
+        case_group = b010000; // case_group 5, shifter
+        case8 = 0; // reset case8
+        case1 = 1; // to represent that the 1st test case of the current case_group 5 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b11000){ // if Test Case #24 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S24; // next state is state S24 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S24: // Test Case #25 - Shifter (Shift Right)
+        inputs.selector = b11000;
+        answers.selector = b11000;
+        case_group = b010000; // case_group 5, shifter
+        case1 = 0; // reset case1
+        case2 = 1; // to represent that the 2nd test case of the current case_group 5 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b11001){ // if Test Case #25 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S25; // next state is state S25 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S25: // Test Case #26 - Shifter (Arithmetic Shift Right)
+        inputs.selector = b11001;
+        answers.selector = b11001;
+        case_group = b010000; // case_group 5, shifter
+        case2 = 0; // reset case2
+        case3 = 1; // to represent that the 3rd test case of the current case_group 5 is being tested
+
+        a = inputs.out[37:22];// A[15:0]
+        b = inputs.out[21:6];// B[15:0]
+        alufn = inputs.out[5:0];// ALUFN[5:0]
+        s = answers.out[18:3]; // ALU[15:0]
+        z = answers.out[2]; // Z
+        v = answers.out[1]; // V
+        n = answers.out[0]; // N
+        
+        // feeding the inputs into the ALU
+        alu.alufn = alufn;
+        alu.a = a;
+        alu.b = b;
+        alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
+        
+        if (fail_case == b11010){ // if Test Case #26 is chosen to fail
+          alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
+        }
+        
+        if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          feeder.d = feeder.S26; // next state is state S26 if correct (i.e. the ALU's output matches the expected answer)
+        }
+        
+        else{
+          feeder.d = feeder.FAIL; // next state is state FAIL if wrong (i.e. the ALU's output does not match the expected answer)
+        }
+        
+      feeder.S26: // Test Case #27 - Multiplication
+        inputs.selector = b11010;
+        answers.selector = b11010;
         case_group = b100000; // case_group 6, multiplication
         case3 = 0; // reset case3
         case1 = 1; // to represent that the 1st test case of the current case_group 6 is being tested
@@ -815,7 +949,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         alu.b = b;
         alu_actual = alu.alu; // assign the alu output of the alu to alu_actual
         
-        if (fail_case == b10111){ // if Test Case #23 is chosen to fail
+        if (fail_case == b11011){ // if Test Case #27 is chosen to fail
           alu_actual[0] = ~alu_actual[0]; // inverts the LSB of alu_actual
         }
         

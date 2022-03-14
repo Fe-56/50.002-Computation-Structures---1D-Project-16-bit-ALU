@@ -41,15 +41,15 @@ module alu (
    
       b01:
         alu = bool.bool;
-        z = 0;
+        z = (bool.bool == 16x{0});
         v = 0;
-        n = 0;
+        n = bool.bool[15];
         
       b10:
         alu = shift.shift;
-        z = 0;
+        z = (shift.shift == 16x{0});
         v = 0;
-        n = 0;
+        n = shift.shift[15];
         
       b11:
         alu = comp.comp;
