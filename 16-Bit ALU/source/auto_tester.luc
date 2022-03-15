@@ -8,7 +8,12 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
     
     input switch[2], // io_dip[2][7] is the toggle to start the auto_tester, io_dip[2][6] is the toggle to reset the auto_tester
     
-    output overall[2],// // overall for all test cases, b00 means still testing, b01 means PASS, b10 means FAIL
+    output status[5],// status of that test case currently being tested
+    // b00000 means just starting auto tester, b00001 means Test Case #1 passed (display P1 on 7 segment)
+    // b00010 means Test Case #2 passed (display P2 on 7 segment), b00011 means Test Case #3 passed (display P3 on 7 segment)
+    // and so on... until b11011 means Test Case #27 passed (display P27 on 7 segment)
+    // b11100 means all 27 test cases passed (display Ps on 7 segment)
+    // b11101 means a test case failed, according to the fail_case (display FA on 7 segments)
     
     // 6 case_groups
     // b000001) Addition, b000010) Subtraction, b000100) Comparator, b001000) Boolean, b010000) Shifter, b100000) Multiplier
@@ -49,7 +54,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
   sig a[16], b[16], alufn[6], s[16], z, v, n, alu_actual[16];
 
   always {
-    overall = b00; // initial output overall b00, to show that it is still testing the test cases
+    status = b00000; // initial output status b00000, to show that it is still testing the test cases
     inputs.selector = b00000; // assign somethiing to inputs.selector first
     answers.selector = b00000; // assign something to anwers.selector first
     case_group = b000000; // assign something to case_group first
@@ -99,6 +104,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b00001; // display P1 on 7 segment
           feeder.d = feeder.S1; // next state is state S1 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -131,6 +137,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b00010; // display P2 on 7 segment
           feeder.d = feeder.S2; // next state is state S2 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -163,6 +170,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b00011; // display P3 on 7 segment
           feeder.d = feeder.S3; // next state is state S3 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -195,6 +203,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b00100; // display P4 on 7 segment
           feeder.d = feeder.S4; // next state is state S4 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -228,6 +237,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b00101; // display P5 on 7 segment
           feeder.d = feeder.S5; // next state is state S5 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -261,6 +271,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b00110; // display P6 on 7 segment
           feeder.d = feeder.S6; // next state is state S6 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -294,6 +305,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b00111; // display P7 on 7 segment
           feeder.d = feeder.S7; // next state is state S7 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -327,6 +339,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b01000; // display P8 on 7 segment
           feeder.d = feeder.S8; // next state is state S8 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -360,6 +373,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b01001; // display P9 on 7 segment
           feeder.d = feeder.S9; // next state is state S9 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -393,6 +407,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b01010; // display P10 on 7 segment
           feeder.d = feeder.S10; // next state is state S10 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -426,6 +441,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b01011; // display P11 on 7 segment
           feeder.d = feeder.S11; // next state is state S11 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -459,6 +475,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b01100; // display P12 on 7 segment
           feeder.d = feeder.S12; // next state is state S12 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -492,6 +509,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b01101; // display P13 on 7 segment
           feeder.d = feeder.S13; // next state is state S13 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -525,6 +543,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b01110; // display P14 on 7 segment
           feeder.d = feeder.S14; // next state is state S14 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -558,6 +577,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b01111; // display P15 on 7 segment
           feeder.d = feeder.S15; // next state is state S15 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -591,6 +611,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b10000; // display P16 on 7 segment
           feeder.d = feeder.S16; // next state is state S16 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -624,6 +645,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b10001; // display P17 on 7 segment
           feeder.d = feeder.S17; // next state is state S17 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -657,6 +679,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b10010; // display P18 on 7 segment
           feeder.d = feeder.S18; // next state is state S18 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -690,6 +713,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b10011; // display P19 on 7 segment
           feeder.d = feeder.S19; // next state is state S19 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -723,6 +747,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b10100; // display P20 on 7 segment
           feeder.d = feeder.S20; // next state is state S20 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -756,6 +781,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b10101; // display P21 on 7 segment
           feeder.d = feeder.S21; // next state is state S21 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -789,6 +815,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b10110; // display P22 on 7 segment
           feeder.d = feeder.S22; // next state is state S22 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -822,6 +849,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b10111; // display P23 on 7 segment
           feeder.d = feeder.S23; // next state is state S23 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -855,6 +883,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b11000; // display P24 on 7 segment
           feeder.d = feeder.S24; // next state is state S24 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -888,6 +917,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b11001; // display P25 on 7 segment
           feeder.d = feeder.S25; // next state is state S25 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -921,6 +951,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b11010; // display P26 on 7 segment
           feeder.d = feeder.S26; // next state is state S26 if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -954,6 +985,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
         if (alu_actual == s & alu.z == z & alu.v == v & alu.n == n){
+          status = b11011; // display P27 on 7 segment
           feeder.d = feeder.PASS; // next state is state PASS if correct (i.e. the ALU's output matches the expected answer)
         }
         
@@ -962,7 +994,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
       feeder.PASS:
-        overall = b10;
+        status = b11100;
         
         if (switch[0]){ // if io_dip[2][6] is high, then reset the auto_tester by going back to the START state
           feeder.d = feeder.START; // go back to the START state
@@ -973,7 +1005,7 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
         }
         
       feeder.FAIL:
-        overall = b01;
+        status = b11101;
         
         if (switch[0]){ // if io_dip[2][6] is high, then reset the auto_tester by going back to the START state
           feeder.d = feeder.START; // go back to the START state

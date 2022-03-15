@@ -51,7 +51,7 @@ module au_top (
     button_cond.in = io_button[2:0]; // down button (io_button[2]), center button (io_button[1]), up button (io_button[0])
     button_detector.in = button_cond.out;
     
-    seg.values = {4h6, 4h6, 4h6, 4h6}; // display nothing on the 7-segments display
+    seg.values = {4d10, 4d10, 4d10, 4d10}; // display nothing on the 7-segments display
     
     // connect the inputs to the manual_test module
     manual_test.button = button_detector.out[2:1]; // down button (io_button[2]), center button (io_button[1])
@@ -71,23 +71,23 @@ module au_top (
         io_led[2][0] = manual_test.n;
         
         if (manual_test.display == b000){ // display nothing on 7-segments
-          seg.values = {4h6, 4h6, 4h6, 4h6};
+          seg.values = {4d10, 4d10, 4d10, 4d10};
         }
           
         else if (manual_test.display == b001){ // display A on 7-segments
-          seg.values = {4h6, 4h6, 4h6, 4h1};
+          seg.values = {4d10, 4d10, 4d10, 4d11};
         }
         
-        else if (manual_test.display == b010){ // display B on 7-segments
-          seg.values = {4h6, 4h6, 4h6, 4h7};
+        else if (manual_test.display == b010){ // display b on 7-segments
+          seg.values = {4d10, 4d10, 4d10, 4d12};
         }
         
         else if (manual_test.display == b011){ // display F on 7-segments
-          seg.values = {4h6, 4h6, 4h6, 4h3};
+          seg.values = {4d10, 4d10, 4d10, 4d13};
         }
         
         else if (manual_test.display == b100){ // display O on 7-segments
-          seg.values = {4h6, 4h6, 4h6, 4h8};
+          seg.values = {4d10, 4d10, 4d10, 4h0};
         }
         
         io_seg = ~seg.seg;      // connect segments to the driver
@@ -108,16 +108,124 @@ module au_top (
         io_led[0][7] = auto_test.case8; // indicate that the 8th test case of the current case_group is being tested
         io_led[1][5:0] = auto_test.case_group; // indicate the current case_group of the test case that is being tested
     
-        if (auto_test.overall == b00){
-          seg.values = {4h6, 4h6, 4h6, 4h6}; // display nothing on 7 segments
+        if (auto_test.status == b00000){
+          seg.values = {4d10, 4d10, 4d10, 4d15}; // display AU on 7 segments, to show that it is in auto tester mode
+        }
+          
+        else if (auto_test.status == b00001){ // if Test Case #1 passed
+          seg.values = {4d10, 4d10, 4d14, 4d1}; // display P1 on 7 segments
+        }
+          
+        else if (auto_test.status == b00010){ // if Test Case #2 passed
+          seg.values = {4d10, 4d10, 4d14, 4d2}; // display P2 on 7 segments
+        }
+
+        else if (auto_test.status == b00011){ // if Test Case #3 passed
+          seg.values = {4d10, 4d10, 4d14, 4d3}; // display P3 on 7 segments
         }
     
-        else if (auto_test.overall == b10){
-          seg.values = {4h0, 4h1, 4h2, 4h2}; // display PASS on 7 segments
+        else if (auto_test.status == b00100){ // if Test Case #4 passed
+          seg.values = {4d10, 4d10, 4d14, 4d4}; // display P4 on 7 segments
+        }
+          
+        else if (auto_test.status == b00101){ // if Test Case #5 passed
+          seg.values = {4d10, 4d10, 4d14, 4d5}; // display P5 on 7 segments
+        }  
+          
+        else if (auto_test.status == b00110){ // if Test Case #6 passed
+          seg.values = {4d10, 4d10, 4d14, 4d6}; // display P6 on 7 segments
+        }
+          
+        else if (auto_test.status == b00111){ // if Test Case #7 passed
+          seg.values = {4d10, 4d10, 4d14, 4d7}; // display P7 on 7 segments
+        } 
+          
+        else if (auto_test.status == b01000){ // if Test Case #8 passed
+          seg.values = {4d10, 4d10, 4d14, 4d8}; // display P8 on 7 segments
+        }    
+          
+        else if (auto_test.status == b01001){ // if Test Case #9 passed
+          seg.values = {4d10, 4d10, 4d14, 4d9}; // display P9 on 7 segments
+        }     
+          
+        else if (auto_test.status == b01010){ // if Test Case #10 passed
+          seg.values = {4d10, 4d14, 4d1, 4d0}; // display P10 on 7 segments
+        } 
+          
+        else if (auto_test.status == b01011){ // if Test Case #11 passed
+          seg.values = {4d10, 4d14, 4d1, 4d1}; // display P11 on 7 segments
+        }   
+          
+        else if (auto_test.status == b01100){ // if Test Case #12 passed
+          seg.values = {4d10, 4d14, 4d1, 4d2}; // display P12 on 7 segments
+        } 
+          
+        else if (auto_test.status == b01101){ // if Test Case #13 passed
+          seg.values = {4d10, 4d14, 4d1, 4d3}; // display P13 on 7 segments
+        } 
+          
+        else if (auto_test.status == b01110){ // if Test Case #14 passed
+          seg.values = {4d10, 4d14, 4d1, 4d4}; // display P14 on 7 segments
+        }  
+          
+        else if (auto_test.status == b01111){ // if Test Case #15 passed
+          seg.values = {4d10, 4d14, 4d1, 4d5}; // display P15 on 7 segments
+        }   
+          
+        else if (auto_test.status == b10000){ // if Test Case #16 passed
+          seg.values = {4d10, 4d14, 4d1, 4d6}; // display P16 on 7 segments
+        } 
+          
+        else if (auto_test.status == b10001){ // if Test Case #17 passed
+          seg.values = {4d10, 4d14, 4d1, 4d7}; // display P17 on 7 segments
+        }
+          
+        else if (auto_test.status == b10010){ // if Test Case #18 passed
+          seg.values = {4d10, 4d14, 4d1, 4d8}; // display P18 on 7 segments
+        }
+          
+        else if (auto_test.status == b10011){ // if Test Case #19 passed
+          seg.values = {4d10, 4d14, 4d1, 4d9}; // display P19 on 7 segments
+        }
+          
+        else if (auto_test.status == b10100){ // if Test Case #20 passed
+          seg.values = {4d10, 4d14, 4d2, 4d0}; // display P20 on 7 segments
+        } 
+
+        else if (auto_test.status == b10101){ // if Test Case #21 passed
+          seg.values = {4d10, 4d14, 4d2, 4d1}; // display P21 on 7 segments
+        }   
+
+        else if (auto_test.status == b10110){ // if Test Case #22 passed
+          seg.values = {4d10, 4d14, 4d2, 4d2}; // display P22 on 7 segments
+        }   
+
+        else if (auto_test.status == b10111){ // if Test Case #23 passed
+          seg.values = {4d10, 4d14, 4d2, 4d3}; // display P23 on 7 segments
+        }   
+
+        else if (auto_test.status == b11000){ // if Test Case #24 passed
+          seg.values = {4d10, 4d14, 4d2, 4d4}; // display P24 on 7 segments
+        }   
+
+        else if (auto_test.status == b11001){ // if Test Case #25 passed
+          seg.values = {4d10, 4d14, 4d2, 4d5}; // display P25 on 7 segments
+        }   
+
+        else if (auto_test.status == b11010){ // if Test Case #26 passed
+          seg.values = {4d10, 4d14, 4d2, 4d6}; // display P26 on 7 segments
+        }   
+
+        else if (auto_test.status == b11011){ // if Test Case #27 passed
+          seg.values = {4d10, 4d14, 4d2, 4d7}; // display P27 on 7 segments
+        }                                                                
+          
+        else if (auto_test.status == b11100){
+          seg.values = {4d10, 4d10, 4d14, 4d11}; // display PA on 7 segments, to represent PASS, where all 27 test cases passed
         }
     
-        else if (auto_test.overall == b01){
-          seg.values = {4h3, 4h1, 4h4, 4h5}; // display FAIL on 7 segment
+        else if (auto_test.status == b11101){
+          seg.values = {4d10, 4d10, 4d13, 4d11}; // display FA on 7 segments, to represent FAIL, where there is one test case that failed
         }
         
         io_seg = ~seg.seg;      // connect segments to the driver
