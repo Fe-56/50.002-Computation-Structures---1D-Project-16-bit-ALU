@@ -109,7 +109,7 @@ module au_top (
         io_led[1][5:0] = auto_test.case_group; // indicate the current case_group of the test case that is being tested
     
         if (auto_test.status == b00000){
-          seg.values = {4d10, 4d10, 4d10, 4d15}; // display AU on 7 segments, to show that it is in auto tester mode
+          seg.values = {4d10, 4d10, 4d11, 4d15}; // display AU on 7 segments, to show that it is in auto tester mode
         }
           
         else if (auto_test.status == b00001){ // if Test Case #1 passed
