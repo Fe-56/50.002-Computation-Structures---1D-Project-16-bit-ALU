@@ -11,7 +11,7 @@ module manual_tester ( // manual-tester module for the 16-bit ALU
     output z, // 1-bit output z from the 16-bit ALU
     output v, // 1-bit output v from the 16-bit ALU
     output n, // 1-bit output n from the 16-bit ALU
-    output display[3] // output for the 7-segments display to indicate whatever the user should input at that state, b00: nothing, b001: A, b010: B, b011: F, b100: O
+    output display[3] // output for the 7-segments display to indicate whatever the user should input at that state, b000: nothing, b001: A, b010: B, b011: F, b100: O
 ) 
 
 {

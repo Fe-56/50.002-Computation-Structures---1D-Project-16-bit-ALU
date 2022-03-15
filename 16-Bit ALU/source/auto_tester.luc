@@ -25,10 +25,10 @@ module auto_tester ( // auto-tester module for the 16-bit ALU, contains 23 test 
     // need up till case8 because the case_group with the largest number of test cases (case_group b010000, Boolean) has 8 test cases
     
     // for example, test case #3 is an addition test case that results in a zero, thus this is under
-    // case_group = b001 (1), where case6 = 0, case 
+    // case_group = b000001 (Addition), where case3 = 1, case1, case2, case4, case5, case6, case7, case8 are all 0 
     // another example, test case #9, which is a comparator test case of A = B resulting in true, thus this is under
-    // case_group = 0b011 (3), where case3 = 0, case2 = 0, case1 = 1 (0b001 = 1), as this is the first test case
-    // under the comparator case_group
+    // case_group = b0000100 (Comparator), where case1 = 1, case2, case3, case4, case5, case6, case7, case8 are all 0, 
+    // as this is the first test case under the comparator case_group
 ) 
 
 {
